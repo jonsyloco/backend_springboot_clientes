@@ -2,6 +2,7 @@ package com.co.spring.boot.backend.apirest.models.controllers;
 
 import com.co.spring.boot.backend.apirest.models.entity.Cliente;
 import com.co.spring.boot.backend.apirest.models.services.IClienteService;
+import com.co.spring.boot.backend.apirest.models.services.ISubirFoto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,6 @@ import java.nio.file.Paths;
 import java.util.*;
 
 
-
 @RestController
 @RequestMapping(path = "api/")
 @CrossOrigin(origins = {"http://localhost:4200"})
@@ -35,6 +35,9 @@ public class ClienteRestController {
 
     @Autowired
     IClienteService service; /*estan interfaz se va a la clase ClienteServiceImpl que la está implementando y se trae esos metodos para aca*/
+
+    @Autowired
+    ISubirFoto subirFotoService; /*estan interfaz se va a la clase SubirFotoImpl que la está implementando y se trae esos metodos para aca*/
 
     private Logger log = LoggerFactory.getLogger(ClienteRestController.class);
 
@@ -242,12 +245,12 @@ public class ClienteRestController {
 
         if (!archivo.isEmpty()) { // si no es vacio
             /*String nombreArchivo = archivo.getOriginalFilename();*/
-            String nombreArchivo = UUID.randomUUID().toString() + ".jpg";
-            Path rutaArchivo = Paths.get("imagenes_usuario").resolve(nombreArchivo).toAbsolutePath();
+
+            Path rutaArchivo = null;
             try {
-                Files.copy(archivo.getInputStream(), rutaArchivo);
+                rutaArchivo = subirFotoService.copiarFoto(archivo);
             } catch (IOException e) {
-                response.put("mensaje", "Error subiendo la imagen: " + nombreArchivo);
+                response.put("mensaje", "Error subiendo la imagen: ");
                 response.put("resultado", "Error: " + e.getCause().getMessage());
                 return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
             }
@@ -272,30 +275,16 @@ public class ClienteRestController {
     @GetMapping("/obtenerFoto/{nombreFoto}")
     public ResponseEntity obtenerFoto(@PathVariable String nombreFoto) {
 
-        String extension = ".jpg";
-        Path rutaArchivo = Paths.get("imagenes_usuario").resolve(nombreFoto + extension).toAbsolutePath();
-        log.error("RUTA DEL RECURSO-Z"+rutaArchivo.toString());
-        Resource recurso =  null;
-
+        Resource recurso = null;
         try {
-            recurso =  new UrlResource(rutaArchivo.toUri());
+            recurso = subirFotoService.cargarFoto(nombreFoto);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
 
-        if(!recurso.exists() && !recurso.isReadable()){
-            rutaArchivo = Paths.get("src/main/resorces/static/imagenes").resolve("no-usuario.svg").toAbsolutePath();
-            try {
-                recurso =  new UrlResource(rutaArchivo.toUri());
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-            log.error("Error, no se pudo cargar la imagen: "+nombreFoto);
-        }
-
-        HttpHeaders cabecera =  new HttpHeaders();
-        cabecera.add(HttpHeaders.CONTENT_DISPOSITION,"attachmnet; filename="+recurso.getFilename());
-        return new ResponseEntity(recurso,cabecera,HttpStatus.OK);
+        HttpHeaders cabecera = new HttpHeaders();
+        cabecera.add(HttpHeaders.CONTENT_DISPOSITION, "attachmnet; filename=" + recurso.getFilename());
+        return new ResponseEntity(recurso, cabecera, HttpStatus.OK);
     }
 
 }
