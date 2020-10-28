@@ -1,11 +1,13 @@
 package com.co.spring.boot.backend.apirest.models.entity;
 
 import com.co.spring.boot.backend.apirest.models.Constantes;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import java.io.Serializable;
@@ -51,4 +53,11 @@ public class Cliente implements Serializable {
 
     @Column(name = "ruta_foto")
     private String rutaFoto;
+
+
+    @NotNull(message = Constantes.VACIO)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="region_id",nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer","handler"}) //excluir atributos que se hacen cuando se hace el join con @JoinColumn y son de hibernate, si no se hace esto -> genera error
+    private Region region;
 }

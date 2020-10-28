@@ -2,6 +2,7 @@ package com.co.spring.boot.backend.apirest.models.controllers;
 
 import com.co.spring.boot.backend.apirest.models.entity.Cliente;
 import com.co.spring.boot.backend.apirest.models.services.IClienteService;
+import com.co.spring.boot.backend.apirest.models.services.IRegionService;
 import com.co.spring.boot.backend.apirest.models.services.ISubirFoto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +39,9 @@ public class ClienteRestController {
 
     @Autowired
     ISubirFoto subirFotoService; /*estan interfaz se va a la clase SubirFotoImpl que la está implementando y se trae esos metodos para aca*/
+
+    @Autowired
+    IRegionService regionService;
 
     private Logger log = LoggerFactory.getLogger(ClienteRestController.class);
 
@@ -198,6 +202,7 @@ public class ClienteRestController {
         cl2.setApellido(cl.getApellido());
         cl2.setFechaNacimiento(cl.getFechaNacimiento());
         cl2.setEdad(cl.getEdad());
+        cl2.setRegion(cl.getRegion());
 
         try {
             cl3 = service.guardarCliente(cl2);
@@ -286,5 +291,12 @@ public class ClienteRestController {
         cabecera.add(HttpHeaders.CONTENT_DISPOSITION, "attachmnet; filename=" + recurso.getFilename());
         return new ResponseEntity(recurso, cabecera, HttpStatus.OK);
     }
+
+    @GetMapping(path = "clientes/regiones")
+    public ResponseEntity traerRegiones() {
+        return new ResponseEntity<>(regionService.buscarRegionesTodas(), HttpStatus.OK);
+    }
+
+
 
 }

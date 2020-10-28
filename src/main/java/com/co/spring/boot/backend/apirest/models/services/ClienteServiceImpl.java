@@ -1,7 +1,9 @@
 package com.co.spring.boot.backend.apirest.models.services;
 
 import com.co.spring.boot.backend.apirest.models.dao.IClienteDao;
+import com.co.spring.boot.backend.apirest.models.dao.IRegionesDao;
 import com.co.spring.boot.backend.apirest.models.entity.Cliente;
+import com.co.spring.boot.backend.apirest.models.entity.Region;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +18,9 @@ public class ClienteServiceImpl implements IClienteService{
     /*inyectando la dependencia del crud repository*/
     @Autowired
     IClienteDao clienteDao;
+
+    @Autowired
+    IRegionesDao regionesDao;
 
     @Override
     public List<Cliente> findAllClient() {
@@ -42,4 +47,6 @@ public class ClienteServiceImpl implements IClienteService{
     public Cliente buscarClientePorId(Long id) {
         return clienteDao.buscarClienteId(id);
     }
+
+
 }

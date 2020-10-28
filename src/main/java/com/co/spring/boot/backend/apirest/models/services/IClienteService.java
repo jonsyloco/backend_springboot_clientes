@@ -1,6 +1,7 @@
 package com.co.spring.boot.backend.apirest.models.services;
 
 import com.co.spring.boot.backend.apirest.models.entity.Cliente;
+import com.co.spring.boot.backend.apirest.models.entity.Region;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -17,4 +18,6 @@ public interface IClienteService {
     public void eliminarCliente(Long id);
 
     public Cliente buscarClientePorId(Long id);
+
+
 }
